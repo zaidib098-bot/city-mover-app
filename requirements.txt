@@ -1,0 +1,4 @@
+flet
+flet-map
+flet[build]>=0.10.0
+pip install --upgrade "flet>=0.27.6" flet-map

@@ -1,0 +1,15 @@
+name: City Mover App
+description: تطبيق الانتقال للمدن والعقارات
+publish: false
+
+android:
+  package_name: com.yourname.citymover
+  min_sdk_version: 21
+  target_sdk_version: 33
+  version: 1.0.0
+  version_code: 1
+  permissions:
+    - android.permission.INTERNET
+    - android.permission.ACCESS_NETWORK_STATE
+    - android.permission.ACCESS_FINE_LOCATION
+    - android.permission.ACCESS_COARSE_LOCATION
