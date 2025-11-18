@@ -57,24 +57,28 @@ except ImportError:
 import db
 
 def main(page: ft.Page):
+    # إعدادات خاصة بالأندرويد
     page.title = "City Mover App - تطبيق الانتقال للمدن"
-    page.window_width = 1200
-    page.window_height = 800
-    page.vertical_alignment = ft.MainAxisAlignment.START
-    page.horizontal_alignment = ft.CrossAxisAlignment.CENTER
+    page.window.width = 400  # عرض مناسب للجوال
+    page.window.height = 800
     page.theme_mode = ft.ThemeMode.LIGHT
-    page.padding = 0
+    page.padding = 5
+    page.spacing = 5
+
+    # تحسينات للأندرويد
+    page.scroll = ft.ScrollMode.ADAPTIVE
+    page.horizontal_alignment = ft.CrossAxisAlignment.CENTER
 
     # ألوان التطبيق
-    PRIMARY_COLOR = "#1E40AF"  # أزرق غامق
-    SECONDARY_COLOR = "#0EA5E9"  # أزرق فاتح
-    ACCENT_COLOR = "#F59E0B"  # برتقالي
-    SUCCESS_COLOR = "#10B981"  # أخضر
-    WARNING_COLOR = "#F59E0B"  # برتقالي
-    ERROR_COLOR = "#EF4444"  # أحمر
-    BACKGROUND_COLOR = "#F8FAFC"  # رمادي فاتح
-    SURFACE_COLOR = "#FFFFFF"  # أبيض
-    TEXT_COLOR = "#1E293B"  # رمادي غامق
+    PRIMARY_COLOR = "#1E40AF"
+    SECONDARY_COLOR = "#0EA5E9"
+    ACCENT_COLOR = "#F59E0B"
+    SUCCESS_COLOR = "#10B981"
+    WARNING_COLOR = "#F59E0B"
+    ERROR_COLOR = "#EF4444"
+    BACKGROUND_COLOR = "#F8FAFC"
+    SURFACE_COLOR = "#FFFFFF"
+    TEXT_COLOR = "#1E293B"
 
     # تهيئة قاعدة البيانات
     db.init_db()
@@ -122,7 +126,7 @@ def main(page: ft.Page):
                 ft.Container(
                     content=ft.Row([
                         ft.Icon(user_icon, color="white", size=20),
-                        ft.Text(f"{user['username']}", color="white"),
+                        ft.Text(f"{user['username']}", color="white", size=14),
                         ft.Container(
                             content=ft.Text(
                                 "مستخدم" if user['role'] == 'user' else "مالك",
@@ -137,15 +141,14 @@ def main(page: ft.Page):
                     padding=8,
                 ),
                 ft.Container(
-                    content=ft.ElevatedButton(
-                        "تسجيل الخروج",
+                    content=ft.IconButton(
                         icon=ft.Icons.LOGOUT,
+                        icon_color="white",
                         on_click=logout,
+                        tooltip="تسجيل الخروج",
                         style=ft.ButtonStyle(
-                            color="white",
-                            bgcolor=ERROR_COLOR,
-                            padding=ft.padding.symmetric(horizontal=16, vertical=10),
-                        ),
+                            shape=ft.RoundedRectangleBorder(radius=8),
+                        )
                     ),
                     padding=8,
                 ),
@@ -153,7 +156,7 @@ def main(page: ft.Page):
 
         return ft.AppBar(
             leading=create_logo(),
-            title=ft.Text(title, weight=ft.FontWeight.BOLD, color="white"),
+            title=ft.Text(title, weight=ft.FontWeight.BOLD, color="white", size=18),
             center_title=False,
             toolbar_height=70,
             bgcolor=PRIMARY_COLOR,
@@ -167,25 +170,42 @@ def main(page: ft.Page):
     def create_card(content, color=SURFACE_COLOR, elevation=2):
         return ft.Container(
             content=content,
-            padding=20,
-            margin=10,
-            border_radius=15,
+            padding=15,
+            margin=8,
+            border_radius=12,
             bgcolor=color,
             shadow=ft.BoxShadow(
                 spread_radius=1,
-                blur_radius=15,
+                blur_radius=10,
                 color=ft.Colors.BLACK12,
-                offset=ft.Offset(0, 4),
+                offset=ft.Offset(0, 2),
             ),
         )
 
     def create_section_header(title: str, icon: str = None):
-        content = [ft.Text(title, size=20, weight=ft.FontWeight.BOLD, color=PRIMARY_COLOR)]
+        content = [ft.Text(title, size=18, weight=ft.FontWeight.BOLD, color=PRIMARY_COLOR)]
         if icon:
-            content.insert(0, ft.Icon(icon, color=PRIMARY_COLOR, size=24))
+            content.insert(0, ft.Icon(icon, color=PRIMARY_COLOR, size=22))
         return ft.Container(
-            content=ft.Row(content, spacing=10),
-            padding=ft.padding.only(bottom=10),
+            content=ft.Row(content, spacing=8),
+            padding=ft.padding.only(bottom=8),
+        )
+
+    def create_touch_button(text, icon=None, on_click=None, bgcolor=PRIMARY_COLOR, expand=False):
+        return ft.Container(
+            content=ft.ElevatedButton(
+                text=text,
+                icon=icon,
+                on_click=on_click,
+                style=ft.ButtonStyle(
+                    color="white",
+                    bgcolor=bgcolor,
+                    padding=ft.padding.symmetric(horizontal=16, vertical=12),
+                    shape=ft.RoundedRectangleBorder(radius=8),
+                ),
+            ),
+            margin=4,
+            width=160 if not expand else None,
         )
 
     # ---------- شاشة تسجيل الدخول / إنشاء حساب ----------
@@ -193,19 +213,21 @@ def main(page: ft.Page):
     def login_view():
         username = ft.TextField(
             label="اسم المستخدم",
-            width=350,
+            expand=True,
             border_color=PRIMARY_COLOR,
             filled=True,
             bgcolor="white",
+            text_size=16,
         )
         password = ft.TextField(
             label="كلمة المرور",
-            width=350,
+            expand=True,
             password=True,
             can_reveal_password=True,
             border_color=PRIMARY_COLOR,
             filled=True,
             bgcolor="white",
+            text_size=16,
         )
 
         mode_tabs = ft.Tabs(
@@ -233,13 +255,14 @@ def main(page: ft.Page):
                 ft.dropdown.Option("owner", "مالك عقار / مضيف"),
             ],
             value="user",
-            width=350,
+            expand=True,
             border_color=PRIMARY_COLOR,
             filled=True,
             bgcolor="white",
+            text_size=16,
         )
 
-        msg = ft.Text(color=ERROR_COLOR)
+        msg = ft.Text(color=ERROR_COLOR, size=14)
 
         def submit(e):
             nonlocal username, password
@@ -282,16 +305,11 @@ def main(page: ft.Page):
                     msg.color = ERROR_COLOR
                     page.update()
 
-        submit_btn = ft.ElevatedButton(
-            text="متابعة",
-            on_click=submit,
-            width=200,
-            style=ft.ButtonStyle(
-                color="white",
-                bgcolor=PRIMARY_COLOR,
-                padding=ft.padding.symmetric(vertical=15),
-            ),
-            icon=ft.Icons.ARROW_FORWARD,
+        submit_btn = create_touch_button(
+            "متابعة", 
+            ft.Icons.ARROW_FORWARD, 
+            submit,
+            bgcolor=PRIMARY_COLOR
         )
 
         content_col = ft.Column(
@@ -302,32 +320,31 @@ def main(page: ft.Page):
                             ft.Icon(ft.Icons.LOCATION_CITY, size=40, color=PRIMARY_COLOR),
                             ft.Column([
                                 ft.Text("مرحباً بك في", size=16, color=TEXT_COLOR),
-                                ft.Text("City Mover", size=32, weight=ft.FontWeight.BOLD, color=PRIMARY_COLOR),
+                                ft.Text("City Mover", size=28, weight=ft.FontWeight.BOLD, color=PRIMARY_COLOR),
                             ], spacing=0)
                         ], spacing=15),
                         ft.Text(
-                            "هذا التطبيق يساعدك على الانتقال لمدينة جديدة والعثور على سكن وخدمات قريبة، "
-                            "ويساعد المالكين على عرض عقاراتهم بسهولة.",
+                            "هذا التطبيق يساعدك على الانتقال لمدينة جديدة والعثور على سكن وخدمات قريبة",
                             size=14,
                             color=ft.Colors.GREY_700,
                             text_align=ft.TextAlign.CENTER,
                         ),
                     ], horizontal_alignment=ft.CrossAxisAlignment.CENTER),
                     padding=20,
-                    margin=ft.margin.only(bottom=20),
+                    margin=ft.margin.only(bottom=10),
                 ),
                 
                 create_card(
                     ft.Column([
                         mode_tabs,
-                        ft.Divider(height=20, color=ft.Colors.TRANSPARENT),
+                        ft.Divider(height=15, color=ft.Colors.TRANSPARENT),
                         username,
                         password,
                         role_dropdown,
                         ft.Container(
                             content=submit_btn,
                             alignment=ft.alignment.center,
-                            padding=20,
+                            padding=15,
                         ),
                         msg,
                     ])
@@ -348,16 +365,16 @@ def main(page: ft.Page):
                                 ]),
                             ], spacing=5),
                             bgcolor=BACKGROUND_COLOR,
-                            padding=15,
-                            border_radius=10,
+                            padding=12,
+                            border_radius=8,
                         ),
                     ], horizontal_alignment=ft.CrossAxisAlignment.CENTER),
-                    padding=20,
+                    padding=15,
                 ),
             ],
             alignment=ft.MainAxisAlignment.START,
             horizontal_alignment=ft.CrossAxisAlignment.CENTER,
-            scroll=ft.ScrollMode.AUTO,
+            scroll=ft.ScrollMode.ADAPTIVE,
         )
 
         return ft.View(
@@ -366,9 +383,9 @@ def main(page: ft.Page):
                 app_bar("تسجيل الدخول / إنشاء حساب"),
                 ft.Container(
                     content=content_col,
-                    padding=20,
+                    padding=15,
                     alignment=ft.alignment.top_center,
-                    width=600,
+                    expand=True,
                     bgcolor=BACKGROUND_COLOR,
                 ),
             ],
@@ -385,45 +402,37 @@ def main(page: ft.Page):
         cities = db.get_cities()
         city_dropdown = ft.Dropdown(
             label="اختر المدينة التي ترغب بالانتقال إليها",
-            width=400,
+            expand=True,
             options=[ft.dropdown.Option(str(c["id"]), c["name"]) for c in cities],
             border_color=PRIMARY_COLOR,
             filled=True,
             bgcolor="white",
+            text_size=16,
         )
 
-        # Dropdown للمناطق - سيتم تعبئته بناءً على المدينة المختارة
         area_dropdown = ft.Dropdown(
             label="اختر المنطقة",
-            width=400,
+            expand=True,
             options=[],
             disabled=True,
             border_color=PRIMARY_COLOR,
             filled=True,
             bgcolor="white",
+            text_size=16,
         )
 
-        selected_city_name = ft.Text("", size=20, weight=ft.FontWeight.BOLD, color=PRIMARY_COLOR)
-        selected_area_name = ft.Text("", size=16, color=TEXT_COLOR)
+        selected_city_name = ft.Text("", size=18, weight=ft.FontWeight.BOLD, color=PRIMARY_COLOR)
+        selected_area_name = ft.Text("", size=14, color=TEXT_COLOR)
         
-        # إضافة خاصية التمرير للعقارات
-        properties_container = ft.Container(
-            content=ft.Column(spacing=15),
-            expand=True,
-        )
-        
-        # إضافة خاصية التمرير للنصائح
-        tips_container = ft.Container(
-            content=ft.Column(spacing=10),
-            height=300,
-        )
+        properties_container = ft.Column(spacing=15)
+        tips_container = ft.Column(spacing=10)
 
         # طبقة الماركر لخريطة الباحث عن منزل
         user_marker_layer_ref = ft.Ref[map.MarkerLayer]()
 
         user_map = map.Map(
             expand=True,
-            height=400,
+            height=300,
             initial_center=map.MapLatitudeLongitude(33.5138, 36.2765),  # دمشق
             initial_zoom=11,
             interaction_configuration=map.MapInteractionConfiguration(
@@ -508,12 +517,12 @@ def main(page: ft.Page):
             
             area_dropdown.value = None
             # تفريغ قائمة العقارات
-            properties_container.content.controls.clear()
+            properties_container.controls.clear()
             page.update()
 
         def load_tips_for_city(city_name: str):
-            tips_container.content.controls.clear()
-            tips_container.content.controls.append(
+            tips_container.controls.clear()
+            tips_container.controls.append(
                 create_section_header("نصائح سريعة للانتقال", ft.Icons.LIGHTBULB)
             )
             base_tips = [
@@ -522,24 +531,14 @@ def main(page: ft.Page):
                 "• ابحث عن الخدمات الأساسية القريبة (سوبرماركت، مستشفى، مدرسة...).",
                 "• حاول زيارة الحي في أوقات مختلفة من اليوم لمعرفة مدى الازدحام والهدوء.",
                 "• تحقق من جودة الخدمات الأساسية (ماء، كهرباء، إنترنت).",
-                "• اسأل السكان المحليين عن تجاربهم في المنطقة.",
-                "• قم بزيارة المنطقة في أوقات الذروة لترى مدى الازدحام.",
-                "• تحقق من توفر مواقف السيارات إذا كنت تمتلك سيارة.",
             ]
             for t in base_tips:
-                tips_container.content.controls.append(
+                tips_container.controls.append(
                     ft.Container(
                         content=ft.Text(t, size=14, color=ft.Colors.GREY_700),
                         padding=ft.padding.symmetric(vertical=5),
                     )
                 )
-            tips_container.content.controls.append(
-                ft.Container(
-                    content=ft.Text(f"مدينة مختارة: {city_name}", size=12, italic=True, color=PRIMARY_COLOR),
-                    padding=ft.padding.only(top=10),
-                )
-            )
-            page.update()
 
         def contact_owner(owner_username: str, property_title: str):
             """فتح نافذة للتواصل مع المالك"""
@@ -567,9 +566,10 @@ def main(page: ft.Page):
                 multiline=True,
                 min_lines=3,
                 max_lines=6,
-                width=400,
+                expand=True,
                 border_color=PRIMARY_COLOR,
                 filled=True,
+                text_size=16,
             )
             
             dlg = ft.AlertDialog(
@@ -577,7 +577,7 @@ def main(page: ft.Page):
                 content=ft.Column([
                     ft.Text(f"بخصوص: {property_title}", color=TEXT_COLOR),
                     message_field
-                ], tight=True),
+                ], tight=True, height=200),
                 actions=[
                     ft.TextButton(
                         "إرسال", 
@@ -596,12 +596,12 @@ def main(page: ft.Page):
             page.open(dlg)
 
         def show_properties(e=None):
-            properties_container.content.controls.clear()
+            properties_container.controls.clear()
             if user_marker_layer_ref.current:
                 user_marker_layer_ref.current.markers.clear()
 
             if not city_dropdown.value:
-                properties_container.content.controls.append(
+                properties_container.controls.append(
                     ft.Container(
                         content=ft.Text("الرجاء اختيار مدينة أولاً.", color=ERROR_COLOR),
                         padding=10,
@@ -618,7 +618,7 @@ def main(page: ft.Page):
 
             # إذا لم يتم اختيار منطقة، لا نعرض شيئاً
             if not area_dropdown.value:
-                properties_container.content.controls.append(
+                properties_container.controls.append(
                     ft.Container(
                         content=ft.Text("الرجاء اختيار منطقة لعرض المنازل المتاحة.", color=WARNING_COLOR),
                         padding=10,
@@ -630,7 +630,7 @@ def main(page: ft.Page):
 
             # التحقق إذا كانت المنطقة مفعلة لدمشق
             if city_name == "دمشق" and area_dropdown.value not in DAMASCUS_ACTIVE_AREAS:
-                properties_container.content.controls.append(
+                properties_container.controls.append(
                     ft.Container(
                         content=ft.Text("لا توجد منازل متاحة في هذه المنطقة حالياً.", color=ERROR_COLOR),
                         padding=10,
@@ -644,7 +644,7 @@ def main(page: ft.Page):
             props = get_properties_by_city_and_area(city_id, area_dropdown.value)
 
             if not props:
-                properties_container.content.controls.append(
+                properties_container.controls.append(
                     ft.Container(
                         content=ft.Text("لا يوجد منازل متاحة حالياً في المنطقة المختارة."),
                         padding=10,
@@ -686,7 +686,7 @@ def main(page: ft.Page):
                             [
                                 ft.Row([
                                     ft.Icon(ft.Icons.HOME, color=PRIMARY_COLOR, size=24),
-                                    ft.Text(p["title"], size=18, weight=ft.FontWeight.BOLD, color=PRIMARY_COLOR, expand=True),
+                                    ft.Text(p["title"], size=16, weight=ft.FontWeight.BOLD, color=PRIMARY_COLOR, expand=True),
                                 ]),
                                 ft.Divider(height=10, color=ft.Colors.TRANSPARENT),
                                 ft.Row([
@@ -708,41 +708,36 @@ def main(page: ft.Page):
                                 ft.Divider(height=15, color=ft.Colors.TRANSPARENT),
                                 ft.Row(
                                     [
-                                        ft.ElevatedButton(
-                                            "إظهار موقع المنزل على الخريطة",
-                                            icon=ft.Icons.MAP,
+                                        create_touch_button(
+                                            "عرض على الخريطة",
+                                            ft.Icons.MAP,
                                             on_click=make_show_on_map(),
-                                            style=ft.ButtonStyle(
-                                                color="white",
-                                                bgcolor=SECONDARY_COLOR,
-                                            )
+                                            bgcolor=SECONDARY_COLOR
                                         ),
-                                        ft.TextButton(
-                                            "فتح في خرائط جوجل",
-                                            icon=ft.Icons.OPEN_IN_NEW,
+                                        create_touch_button(
+                                            "خرائط جوجل",
+                                            ft.Icons.OPEN_IN_NEW,
                                             on_click=lambda ev, lat=p["lat"], lon=p["lon"]: (
                                                 page.launch_url(f"https://www.google.com/maps?q={lat},{lon}")
                                                 if lat is not None and lon is not None
                                                 else None
                                             ),
-                                            style=ft.ButtonStyle(color=PRIMARY_COLOR)
+                                            bgcolor=PRIMARY_COLOR
                                         ),
-                                        ft.ElevatedButton(
-                                            "تواصل مع المالك",
-                                            icon=ft.Icons.CONTACT_PHONE,
+                                        create_touch_button(
+                                            "تواصل",
+                                            ft.Icons.CONTACT_PHONE,
                                             on_click=make_contact_owner(),
-                                            style=ft.ButtonStyle(
-                                                color="white",
-                                                bgcolor=SUCCESS_COLOR
-                                            )
+                                            bgcolor=SUCCESS_COLOR
                                         ),
                                     ],
-                                    alignment=ft.MainAxisAlignment.SPACE_EVENLY,
+                                    alignment=ft.MainAxisAlignment.CENTER,
+                                    wrap=True,
                                 ),
                             ]
                         )
                     )
-                    properties_container.content.controls.append(card)
+                    properties_container.controls.append(card)
 
             load_tips_for_city(city_name)
             page.update()
@@ -759,7 +754,7 @@ def main(page: ft.Page):
         area_dropdown.on_change = on_area_change
 
         # تحميل نصائح أولية
-        tips_container.content.controls.append(
+        tips_container.controls.append(
             ft.Container(
                 content=ft.Column([
                     ft.Icon(ft.Icons.INFO, color=PRIMARY_COLOR, size=40),
@@ -788,15 +783,13 @@ def main(page: ft.Page):
                     ),
                     create_section_header("المنازل المتاحة", ft.Icons.HOME),
                     ft.Container(
-                        content=ft.Column([
-                            properties_container
-                        ], scroll=ft.ScrollMode.ADAPTIVE),
+                        content=ft.Column([properties_container], scroll=ft.ScrollMode.ADAPTIVE),
                         expand=True,
                     ),
                 ],
                 expand=True,
             ),
-            expand=2,
+            expand=1,
             padding=10,
         )
 
@@ -804,13 +797,11 @@ def main(page: ft.Page):
             content=ft.Column(
                 [
                     create_section_header("خريطة موقع المنزل", ft.Icons.MAP),
-                    create_card(ft.Container(content=user_map, height=400)),
+                    create_card(ft.Container(content=user_map, height=300)),
                     create_section_header("نصائح الانتقال", ft.Icons.LIGHTBULB),
                     create_card(
                         ft.Container(
-                            content=ft.Column([
-                                tips_container
-                            ], scroll=ft.ScrollMode.ADAPTIVE),
+                            content=ft.Column([tips_container], scroll=ft.ScrollMode.ADAPTIVE),
                             height=300,
                         )
                     ),
@@ -821,22 +812,40 @@ def main(page: ft.Page):
             padding=10,
         )
 
-        layout = ft.Row(
+        # استخدام عمود واحد للجوال مع إمكانية التمرير
+        layout = ft.Column(
             [
-                ft.Container(
-                    content=ft.Column([
-                        left_panel
-                    ], scroll=ft.ScrollMode.ADAPTIVE),
-                    expand=2,
+                create_section_header("البحث عن سكن", ft.Icons.SEARCH),
+                create_card(
+                    ft.Column([
+                        ft.Text("اختر مدينة الانتقال", size=16, weight=ft.FontWeight.BOLD, color=PRIMARY_COLOR),
+                        city_dropdown,
+                        ft.Divider(height=10),
+                        ft.Text("اختر المنطقة", size=16, weight=ft.FontWeight.BOLD, color=PRIMARY_COLOR),
+                        area_dropdown,
+                        selected_city_name,
+                        selected_area_name,
+                    ])
                 ),
-                ft.VerticalDivider(width=1, color=ft.Colors.GREY_300),
+                
+                create_section_header("خريطة موقع المنزل", ft.Icons.MAP),
+                create_card(ft.Container(content=user_map, height=300)),
+                
+                create_section_header("المنازل المتاحة", ft.Icons.HOME),
                 ft.Container(
-                    content=ft.Column([
-                        right_panel
-                    ], scroll=ft.ScrollMode.ADAPTIVE),
-                    expand=1,
+                    content=ft.Column([properties_container], scroll=ft.ScrollMode.ADAPTIVE),
+                    expand=True,
+                ),
+                
+                create_section_header("نصائح الانتقال", ft.Icons.LIGHTBULB),
+                create_card(
+                    ft.Container(
+                        content=ft.Column([tips_container], scroll=ft.ScrollMode.ADAPTIVE),
+                        height=300,
+                    )
                 ),
             ],
+            scroll=ft.ScrollMode.ADAPTIVE,
             expand=True,
         )
 
@@ -863,74 +872,83 @@ def main(page: ft.Page):
         cities = db.get_cities()
         city_dropdown = ft.Dropdown(
             label="المدينة",
-            width=350,
+            expand=True,
             options=[ft.dropdown.Option(str(c["id"]), c["name"]) for c in cities],
             border_color=PRIMARY_COLOR,
             filled=True,
             bgcolor="white",
+            text_size=16,
         )
 
         # Dropdown للمناطق - سيتم تعبئته بناءً على المدينة المختارة
         area_dropdown = ft.Dropdown(
             label="المنطقة",
-            width=350,
+            expand=True,
             options=[],
             disabled=True,
             border_color=PRIMARY_COLOR,
             filled=True,
             bgcolor="white",
+            text_size=16,
         )
 
         area_field = ft.TextField(
             label="أو اكتب اسم منطقة جديدة", 
-            width=350,
+            expand=True,
             border_color=PRIMARY_COLOR,
             filled=True,
+            text_size=16,
         )
         title_field = ft.TextField(
             label="عنوان الإعلان (مثال: شقة مفروشة بالقرب من المركز)",
-            width=500,
+            expand=True,
             border_color=PRIMARY_COLOR,
             filled=True,
+            text_size=16,
         )
         rent_field = ft.TextField(
             label="الإيجار الشهري (ل.س)", 
-            width=200,
+            expand=True,
             border_color=PRIMARY_COLOR,
             filled=True,
+            text_size=16,
         )
         desc_field = ft.TextField(
             label="وصف المنزل",
             multiline=True,
             min_lines=3,
             max_lines=5,
-            width=500,
+            expand=True,
             border_color=PRIMARY_COLOR,
             filled=True,
+            text_size=16,
         )
         services_field = ft.TextField(
             label="الخدمات القريبة (سوبرماركت، مواصلات، مدارس...)",
             multiline=True,
             min_lines=2,
             max_lines=4,
-            width=500,
+            expand=True,
             border_color=PRIMARY_COLOR,
             filled=True,
+            text_size=16,
         )
         lat_field = ft.TextField(
             label="خط العرض (Latitude)", 
-            width=200,
+            expand=True,
             border_color=PRIMARY_COLOR,
             filled=True,
+            text_size=16,
         )
         lon_field = ft.TextField(
             label="خط الطول (Longitude)", 
-            width=200,
+            expand=True,
             border_color=PRIMARY_COLOR,
             filled=True,
+            text_size=16,
         )
 
-        msg = ft.Text(color=ERROR_COLOR)
+        msg = ft.Text(color=ERROR_COLOR, size=14)
 
         # خريطة تفاعلية لتحديد موقع المنزل بالضغط
         owner_marker_layer_ref = ft.Ref[map.MarkerLayer]()
@@ -1137,13 +1155,13 @@ def main(page: ft.Page):
                 return
             
             # إنشاء حقول التعديل
-            edit_title = ft.TextField(label="العنوان", value=prop[0], width=400, border_color=PRIMARY_COLOR, filled=True)
-            edit_area = ft.TextField(label="المنطقة", value=prop[1], width=400, border_color=PRIMARY_COLOR, filled=True)
-            edit_desc = ft.TextField(label="الوصف", value=prop[2], multiline=True, min_lines=3, width=400, border_color=PRIMARY_COLOR, filled=True)
-            edit_rent = ft.TextField(label="الإيجار", value=str(prop[3]) if prop[3] else "", width=200, border_color=PRIMARY_COLOR, filled=True)
-            edit_lat = ft.TextField(label="خط العرض", value=str(prop[4]) if prop[4] else "", width=200, border_color=PRIMARY_COLOR, filled=True)
-            edit_lon = ft.TextField(label="خط الطول", value=str(prop[5]) if prop[5] else "", width=200, border_color=PRIMARY_COLOR, filled=True)
-            edit_services = ft.TextField(label="الخدمات", value=prop[6] or "", multiline=True, min_lines=2, width=400, border_color=PRIMARY_COLOR, filled=True)
+            edit_title = ft.TextField(label="العنوان", value=prop[0], expand=True, border_color=PRIMARY_COLOR, filled=True)
+            edit_area = ft.TextField(label="المنطقة", value=prop[1], expand=True, border_color=PRIMARY_COLOR, filled=True)
+            edit_desc = ft.TextField(label="الوصف", value=prop[2], multiline=True, min_lines=3, expand=True, border_color=PRIMARY_COLOR, filled=True)
+            edit_rent = ft.TextField(label="الإيجار", value=str(prop[3]) if prop[3] else "", expand=True, border_color=PRIMARY_COLOR, filled=True)
+            edit_lat = ft.TextField(label="خط العرض", value=str(prop[4]) if prop[4] else "", expand=True, border_color=PRIMARY_COLOR, filled=True)
+            edit_lon = ft.TextField(label="خط الطول", value=str(prop[5]) if prop[5] else "", expand=True, border_color=PRIMARY_COLOR, filled=True)
+            edit_services = ft.TextField(label="الخدمات", value=prop[6] or "", multiline=True, min_lines=2, expand=True, border_color=PRIMARY_COLOR, filled=True)
             
             def update_property(e):
                 try:
@@ -1196,7 +1214,7 @@ def main(page: ft.Page):
                     edit_desc,
                     ft.Row([edit_rent, edit_lat, edit_lon]),
                     edit_services
-                ], scroll=ft.ScrollMode.AUTO, height=400),
+                ], scroll=ft.ScrollMode.ADAPTIVE, height=400),
                 actions=[
                     ft.TextButton("حفظ التعديلات", on_click=update_property, style=ft.ButtonStyle(color=SUCCESS_COLOR)),
                     ft.TextButton("إلغاء", on_click=lambda e: page.close(dlg), style=ft.ButtonStyle(color=ERROR_COLOR)),
@@ -1205,21 +1223,18 @@ def main(page: ft.Page):
             
             page.open(dlg)
 
-        add_btn = ft.ElevatedButton(
+        add_btn = create_touch_button(
             "حفظ العقار", 
-            icon=ft.Icons.SAVE, 
+            ft.Icons.SAVE, 
             on_click=save_property,
-            style=ft.ButtonStyle(
-                color="white",
-                bgcolor=SUCCESS_COLOR,
-                padding=ft.padding.symmetric(horizontal=20, vertical=15),
-            )
+            bgcolor=SUCCESS_COLOR
         )
-        open_maps_btn = ft.TextButton(
-            "فتح خرائط جوجل للمساعدة في اختيار الموقع",
-            icon=ft.Icons.OPEN_IN_NEW,
+        
+        open_maps_btn = create_touch_button(
+            "فتح خرائط جوجل",
+            ft.Icons.OPEN_IN_NEW,
             on_click=open_google_maps,
-            style=ft.ButtonStyle(color=PRIMARY_COLOR)
+            bgcolor=PRIMARY_COLOR
         )
 
         properties_list_column = ft.Column(spacing=15)
@@ -1233,7 +1248,7 @@ def main(page: ft.Page):
                         ft.Column([
                             ft.Icon(ft.Icons.HOME, size=40, color=ft.Colors.GREY_400),
                             ft.Text("لم تقم بإضافة أي عقار بعد.", size=16, color=ft.Colors.GREY_600),
-                            ft.Text("استخدم النموذج على اليسار لإضافة عقارك الأول", size=14, color=ft.Colors.GREY_500),
+                            ft.Text("استخدم النموذج أدناه لإضافة عقارك الأول", size=14, color=ft.Colors.GREY_500),
                         ], horizontal_alignment=ft.CrossAxisAlignment.CENTER),
                         color=BACKGROUND_COLOR,
                     )
@@ -1285,16 +1300,13 @@ def main(page: ft.Page):
                                     ft.Text(f"الخدمات القريبة: {p['services'] or 'غير مذكورة'}", size=12, color=ft.Colors.GREY_600),
                                     ft.Divider(height=15, color=ft.Colors.TRANSPARENT),
                                     ft.Row([
-                                        ft.ElevatedButton(
+                                        create_touch_button(
                                             "تعديل البيانات",
-                                            icon=ft.Icons.EDIT,
+                                            ft.Icons.EDIT,
                                             on_click=make_edit_function(),
-                                            style=ft.ButtonStyle(
-                                                color="white",
-                                                bgcolor=PRIMARY_COLOR
-                                            )
+                                            bgcolor=PRIMARY_COLOR
                                         )
-                                    ], alignment=ft.MainAxisAlignment.END),
+                                    ], alignment=ft.MainAxisAlignment.CENTER),
                                 ]
                             )
                         )
@@ -1302,7 +1314,8 @@ def main(page: ft.Page):
 
         load_owner_properties()
 
-        form_col = ft.Column(
+        # واجهة المالك كعمود واحد للجوال
+        layout = ft.Column(
             [
                 create_section_header("إضافة عقار جديد", ft.Icons.ADD_BUSINESS),
                 create_card(
@@ -1325,7 +1338,7 @@ def main(page: ft.Page):
                 create_card(
                     ft.Column([
                         title_field,
-                        ft.Row([rent_field]),
+                        rent_field,
                         desc_field,
                         services_field,
                     ])
@@ -1339,7 +1352,7 @@ def main(page: ft.Page):
                             color=ft.Colors.GREY_600,
                         ),
                         ft.Container(content=owner_map, height=300),
-                        open_maps_btn,
+                        ft.Row([open_maps_btn], alignment=ft.MainAxisAlignment.CENTER),
                     ])
                 ),
                 ft.Container(
@@ -1350,35 +1363,14 @@ def main(page: ft.Page):
                     content=msg,
                     alignment=ft.alignment.center,
                 ),
-            ],
-            scroll=ft.ScrollMode.AUTO,
-        )
-
-        layout = ft.Row(
-            [
+                
+                create_section_header("عقاراتي", ft.Icons.REAL_ESTATE_AGENT),
                 ft.Container(
-                    content=form_col, 
-                    expand=2, 
-                    padding=10,
-                ),
-                ft.VerticalDivider(width=1, color=ft.Colors.GREY_300),
-                ft.Container(
-                    content=ft.Column(
-                        [
-                            create_section_header("عقاراتي", ft.Icons.REAL_ESTATE_AGENT),
-                            ft.Container(
-                                content=ft.Column([
-                                    properties_list_column
-                                ], scroll=ft.ScrollMode.ADAPTIVE),
-                                expand=True,
-                            ),
-                        ],
-                        expand=True,
-                    ),
-                    expand=1,
-                    padding=10,
+                    content=ft.Column([properties_list_column], scroll=ft.ScrollMode.ADAPTIVE),
+                    expand=True,
                 ),
             ],
+            scroll=ft.ScrollMode.ADAPTIVE,
             expand=True,
         )
 
@@ -1422,4 +1414,9 @@ def main(page: ft.Page):
 
 
 if __name__ == "__main__":
-    ft.app(target=main)
+    # تشغيل التطبيق على الأندرويد مع الحفاظ على جميع الميزات
+    ft.app(
+        target=main,
+        view=ft.AppView.FLET_APP,
+        assets_dir="assets"
+)
