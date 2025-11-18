@@ -3,7 +3,7 @@ description: تطبيق الانتقال للمدن والعقارات
 publish: false
 
 android:
-  package_name: com.yourname.citymover
+  package_name: com.citymover.app
   min_sdk_version: 21
   target_sdk_version: 33
   version: 1.0.0
@@ -11,5 +11,5 @@ android:
   permissions:
     - android.permission.INTERNET
     - android.permission.ACCESS_NETWORK_STATE
-    - android.permission.ACCESS_FINE_LOCATION
-    - android.permission.ACCESS_COARSE_LOCATION
+    - android.permission.WRITE_EXTERNAL_STORAGE
+    - android.permission.READ_EXTERNAL_STORAGE
