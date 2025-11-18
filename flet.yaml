@@ -12,4 +12,8 @@ android:
     - android.permission.INTERNET
     - android.permission.ACCESS_NETWORK_STATE
     - android.permission.WRITE_EXTERNAL_STORAGE
+<<<<<<< HEAD
     - android.permission.READ_EXTERNAL_STORAGE
+=======
+    - android.permission.READ_EXTERNAL_STORAGE
+>>>>>>> a1d0cd9d871b34fe15847374e5b89751b62300eb

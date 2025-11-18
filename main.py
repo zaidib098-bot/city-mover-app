@@ -1419,4 +1419,8 @@ if __name__ == "__main__":
         target=main,
         view=ft.AppView.FLET_APP,
         assets_dir="assets"
+<<<<<<< HEAD
 )
+=======
+)
+>>>>>>> a1d0cd9d871b34fe15847374e5b89751b62300eb

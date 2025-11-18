@@ -423,4 +423,8 @@ if __name__ == "__main__":
     if user:
         print(f"👤 Test user: {user['username']} - {user['role']}")
     
+<<<<<<< HEAD
     print("✅ Database module test completed!")
+=======
+    print("✅ Database module test completed!")
+>>>>>>> a1d0cd9d871b34fe15847374e5b89751b62300eb
